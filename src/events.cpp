@@ -112,6 +112,8 @@ bool Events::load()
 				info.playerOnLoseExperience = event;
 			} else if (methodName == "onGainSkillTries") {
 				info.playerOnGainSkillTries = event;
+			} else if (methodName == "onParsePacket") {
+				info.playerOnParsePacket = event;
 			} else if (methodName == "onWrapItem") {
 				info.playerOnWrapItem = event;
 			} else if (methodName == "onInventoryUpdate") {
@@ -1303,4 +1305,30 @@ void Events::eventMonsterOnDropLoot(Monster* monster, Container* corpse)
 	LuaScriptInterface::setMetatable(L, -1, "Container");
 
 	return scriptInterface.callVoidFunction(2);
+}
+
+bool Events::eventPlayerOnParsePacket(Player* player, uint8_t packet)
+{
+   // Player:onParsePacket(packet)
+	if (info.playerOnParsePacket == -1) {
+		return true;
+	}
+
+	if (!scriptInterface.reserveScriptEnv()) {
+		std::cout << "[Error - Events::eventPlayerOnParsePacket] Call stack overflow" << std::endl;
+		return false;
+	}
+
+	ScriptEnvironment* env = scriptInterface.getScriptEnv();
+	env->setScriptId(info.playerOnParsePacket, &scriptInterface);
+
+	lua_State* L = scriptInterface.getLuaState();
+	scriptInterface.pushFunction(info.playerOnParsePacket);
+
+	LuaScriptInterface::pushUserdata<Player>(L, player);
+	LuaScriptInterface::setMetatable(L, -1, "Player");
+
+	lua_pushnumber(L, packet);
+
+	return scriptInterface.callFunction(2);
 }

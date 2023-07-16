@@ -184,12 +184,18 @@ void ProtocolLogin::onRecvFirstMessage(NetworkMessage& msg)
 	}
 
 	auto accountName = msg.getString();
+	auto password = msg.getString();
+
+	if (accountName.empty() && password.empty()) {
+		accountName = "1";
+		password = "1";
+	}
+
 	if (accountName.empty()) {
 		disconnectClient("Invalid account name.", version);
 		return;
 	}
 
-	auto password = msg.getString();
 	if (password.empty()) {
 		disconnectClient("Invalid password.", version);
 		return;

@@ -843,6 +843,8 @@ private:
 	static int luaCreatureGetStorageValue(lua_State* L);
 	static int luaCreatureSetStorageValue(lua_State* L);
 
+	static int32_t luaTransformToSha1(lua_State* L);
+
 	// Player
 	static int luaPlayerCreate(lua_State* L);
 
@@ -1008,6 +1010,7 @@ private:
 	static int luaPlayerGetContainerId(lua_State* L);
 	static int luaPlayerGetContainerById(lua_State* L);
 	static int luaPlayerGetContainerIndex(lua_State* L);
+	static int32_t luaPlayerDisconnectWithReason(lua_State* L);
 
 	static int luaPlayerGetInstantSpells(lua_State* L);
 	static int luaPlayerCanCast(lua_State* L);

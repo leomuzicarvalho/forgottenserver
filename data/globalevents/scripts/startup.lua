@@ -58,4 +58,5 @@ function onStartup()
 	
 	-- setup highscores variables
 	setUpHighscores()
+	handleAccountManagerStartup()
 end

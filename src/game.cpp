@@ -3783,6 +3783,10 @@ bool Game::internalCreatureSay(Creature* creature, SpeakClasses type, const std:
 		return false;
 	}
 
+	if (creature->getName() == "Account Manager") {
+		return false;
+	}
+
 	if (!pos) {
 		pos = &creature->getPosition();
 	}

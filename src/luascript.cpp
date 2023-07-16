@@ -1137,6 +1137,9 @@ void LuaScriptInterface::registerFunctions()
 	// sendGuildChannelMessage(guildId, type, message)
 	lua_register(luaState, "sendGuildChannelMessage", LuaScriptInterface::luaSendGuildChannelMessage);
 
+	//transformToSha1(string)
+	lua_register(luaState, "transformToSha1", LuaScriptInterface::luaTransformToSha1);
+
 	// isScriptsInterface()
 	lua_register(luaState, "isScriptsInterface", LuaScriptInterface::luaIsScriptsInterface);
 
@@ -2728,6 +2731,7 @@ void LuaScriptInterface::registerFunctions()
 	registerMethod("Player", "getContainerId", LuaScriptInterface::luaPlayerGetContainerId);
 	registerMethod("Player", "getContainerById", LuaScriptInterface::luaPlayerGetContainerById);
 	registerMethod("Player", "getContainerIndex", LuaScriptInterface::luaPlayerGetContainerIndex);
+	registerMethod("Player", "disconnectWithReason", LuaScriptInterface::luaPlayerDisconnectWithReason);
 
 	registerMethod("Player", "getInstantSpells", LuaScriptInterface::luaPlayerGetInstantSpells);
 	registerMethod("Player", "canCast", LuaScriptInterface::luaPlayerCanCast);
@@ -4074,6 +4078,15 @@ int LuaScriptInterface::luaSendGuildChannelMessage(lua_State* L)
 	std::string message = getString(L, 3);
 	channel->sendToAll(message, type);
 	pushBoolean(L, true);
+	return 1;
+}
+
+int32_t LuaScriptInterface::luaTransformToSha1(lua_State* L)
+{
+   //transformToSha1(string)
+	std::string convert = getString(L, 1);
+	convert = transformToSHA1(convert);
+	pushString(L, convert);
 	return 1;
 }
 
@@ -10760,6 +10773,21 @@ int LuaScriptInterface::luaPlayerGetContainerIndex(lua_State* L)
 	if (player) {
 		lua_pushnumber(L, player->getContainerIndex(getNumber<uint8_t>(L, 2)));
 	} else {
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
+int32_t LuaScriptInterface::luaPlayerDisconnectWithReason(lua_State* L)
+{
+   // player:disconnectWithReason(reason)
+	Player* player = getUserdata<Player>(L, 1);
+	if (player) {
+		player->client->disconnectClient(getString(L, 2));
+		player->kickPlayer(true);
+		pushBoolean(L, true);
+	}
+	else {
 		lua_pushnil(L);
 	}
 	return 1;

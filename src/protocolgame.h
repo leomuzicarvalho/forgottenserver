@@ -66,13 +66,13 @@ public:
 
 	void login(uint32_t characterId, uint32_t accountId, OperatingSystem_t operatingSystem);
 	void logout(bool displayEffect, bool forced);
+	void disconnectClient(const std::string& message) const;
 
 	uint16_t getVersion() const { return version; }
 
 private:
 	ProtocolGame_ptr getThis() { return std::static_pointer_cast<ProtocolGame>(shared_from_this()); }
 	void connect(uint32_t playerId, OperatingSystem_t operatingSystem);
-	void disconnectClient(const std::string& message) const;
 	void writeToOutputBuffer(const NetworkMessage& msg);
 
 	void release() override;

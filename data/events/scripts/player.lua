@@ -6,6 +6,27 @@ function Player:onBrowseField(position)
 	return true
 end
 
+function Player:onMoveCreature(creature, fromPosition, toPosition)
+	if not handleAccountManagerMove(self, creature) then
+		return false
+	end
+	return true
+end
+
+function Player:onTradeRequest(target, item)
+	if not handleAccountManagerTradeRequest(self, target) then
+		return false
+	end
+	return true
+end
+
+function Player:onParsePacket(packet)
+	if not handleAccountManagerParsePacket(self, packet) then
+		return false
+	end
+	return true
+end
+
 function Player:onLook(thing, position, distance)
 	local description = ""
 	local onLook = EventCallback.onLook

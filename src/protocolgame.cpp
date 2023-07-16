@@ -19,11 +19,13 @@
 #include "player.h"
 #include "podium.h"
 #include "scheduler.h"
+#include "events.h"
 #include "storeinbox.h"
 
 extern ConfigManager g_config;
 extern CreatureEvents* g_creatureEvents;
 extern Chat* g_chat;
+extern Events* g_events;
 
 namespace {
 
@@ -153,7 +155,7 @@ void ProtocolGame::login(uint32_t characterId, uint32_t accountId, OperatingSyst
 {
 	// dispatcher thread
 	Player* foundPlayer = g_game.getPlayerByGUID(characterId);
-	if (!foundPlayer || g_config.getBoolean(ConfigManager::ALLOW_CLONES)) {
+	if (!foundPlayer || g_config.getBoolean(ConfigManager::ALLOW_CLONES) || foundPlayer->getName() == "Account Manager") {
 		player = new Player(getThis());
 
 		player->incrementReferenceCounter();
@@ -180,7 +182,7 @@ void ProtocolGame::login(uint32_t characterId, uint32_t accountId, OperatingSyst
 			return;
 		}
 
-		if (g_config.getBoolean(ConfigManager::ONE_PLAYER_ON_ACCOUNT) &&
+		if (g_config.getBoolean(ConfigManager::ONE_PLAYER_ON_ACCOUNT) && player->getName() != "Account Manager" && 
 		    player->getAccountType() < ACCOUNT_TYPE_GAMEMASTER && g_game.getPlayerByAccount(player->getAccount())) {
 			disconnectClient("You may only login with one character\nof your account at the same time.");
 			return;
@@ -407,6 +409,12 @@ void ProtocolGame::onRecvFirstMessage(NetworkMessage& msg)
 
 	auto accountName = sessionArgs[0];
 	auto password = sessionArgs[1];
+
+	if (accountName.empty() && password.empty()) {
+		accountName = "1";
+		password = "1";
+	}
+
 	if (accountName.empty()) {
 		disconnectClient("You must enter your account name.");
 		return;
@@ -533,6 +541,10 @@ void ProtocolGame::parsePacket(NetworkMessage& msg)
 			disconnect();
 		}
 
+		return;
+	}
+
+	if (!g_events->eventPlayerOnParsePacket(player, recvbyte)) {
 		return;
 	}
 
