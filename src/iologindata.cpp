@@ -159,6 +159,13 @@ void IOLoginData::setAccountType(uint32_t accountId, AccountType_t accountType)
 
 void IOLoginData::updateOnlineStatus(uint32_t guid, bool login)
 {
+	Database& db = Database::getInstance();
+	DBResult_ptr accManagerQueryResult = db.storeQuery("SELECT `id` FROM `players` WHERE `name` = 'Account Manager'");
+
+	if(!accManagerQueryResult || accManagerQueryResult->getNumber<uint32_t>("id") == guid) {
+		return;
+	}
+
 	if (g_config.getBoolean(ConfigManager::ALLOW_CLONES)) {
 		return;
 	}

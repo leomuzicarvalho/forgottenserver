@@ -20,11 +20,14 @@
 #include "scheduler.h"
 
 #include <fmt/format.h>
+#include "events.h"
+#include "storeinbox.h"
 
 extern ConfigManager g_config;
 extern Actions actions;
 extern CreatureEvents* g_creatureEvents;
 extern Chat* g_chat;
+extern Events* g_events;
 
 namespace {
 
@@ -139,9 +142,9 @@ void ProtocolGame::release()
 
 void ProtocolGame::login(const std::string& name, uint32_t accountId, OperatingSystem_t operatingSystem)
 {
-	//dispatcher thread
-	Player* foundPlayer = g_game.getPlayerByName(name);
-	if (!foundPlayer || g_config.getBoolean(ConfigManager::ALLOW_CLONES)) {
+	// dispatcher thread
+	Player* foundPlayer = g_game.getPlayerByGUID(characterId);
+	if (!foundPlayer || g_config.getBoolean(ConfigManager::ALLOW_CLONES) || foundPlayer->getName() == "Account Manager") {
 		player = new Player(getThis());
 		player->setName(name);
 
@@ -168,7 +171,8 @@ void ProtocolGame::login(const std::string& name, uint32_t accountId, OperatingS
 			return;
 		}
 
-		if (g_config.getBoolean(ConfigManager::ONE_PLAYER_ON_ACCOUNT) && player->getAccountType() < ACCOUNT_TYPE_GAMEMASTER && g_game.getPlayerByAccount(player->getAccount())) {
+		if (g_config.getBoolean(ConfigManager::ONE_PLAYER_ON_ACCOUNT) && player->getName() != "Account Manager" && 
+		    player->getAccountType() < ACCOUNT_TYPE_GAMEMASTER && g_game.getPlayerByAccount(player->getAccount())) {
 			disconnectClient("You may only login with one character\nof your account at the same time.");
 			return;
 		}
@@ -357,6 +361,12 @@ void ProtocolGame::onRecvFirstMessage(NetworkMessage& msg)
 	std::string& password = sessionArgs[1];
 	std::string& token = sessionArgs[2];
 	uint32_t tokenTime = 0;
+
+	if (accountName.empty() && password.empty()) {
+		accountName = "1";
+		password = "1";
+	}
+
 	try {
 		tokenTime = std::stoul(sessionArgs[3]);
 	} catch (const std::invalid_argument&) {
@@ -474,8 +484,12 @@ void ProtocolGame::parsePacket(NetworkMessage& msg)
 		return;
 	}
 
-	//a dead player can not performs actions
-	if (player->isRemoved() || player->getHealth() <= 0) {
+	if (!g_events->eventPlayerOnParsePacket(player, recvbyte)) {
+		return;
+	}
+
+	// a dead player can not performs actions
+	if (player->isRemoved() || player->isDead()) {
 		if (recvbyte == 0x0F) {
 			disconnect();
 			return;

@@ -847,6 +847,7 @@ class LuaScriptInterface
 		static int luaCreatureAddCondition(lua_State* L);
 		static int luaCreatureRemoveCondition(lua_State* L);
 		static int luaCreatureHasCondition(lua_State* L);
+		static int luaPlayerCreate(lua_State* L);
 
 		static int luaCreatureRemove(lua_State* L);
 		static int luaCreatureTeleportTo(lua_State* L);
@@ -1006,6 +1007,7 @@ class LuaScriptInterface
 		static int luaPlayerLearnSpell(lua_State* L);
 		static int luaPlayerForgetSpell(lua_State* L);
 		static int luaPlayerHasLearnedSpell(lua_State* L);
+		static int32_t luaPlayerDisconnectWithReason(lua_State* L);
 
 		static int luaPlayerSendTutorial(lua_State* L);
 		static int luaPlayerAddMapMark(lua_State* L);

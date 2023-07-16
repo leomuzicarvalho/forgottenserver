@@ -7,6 +7,8 @@ CREATE TABLE IF NOT EXISTS `accounts` (
   `premium_ends_at` int unsigned NOT NULL DEFAULT '0',
   `email` varchar(255) NOT NULL DEFAULT '',
   `creation` int NOT NULL DEFAULT '0',
+  `recovery_key` varchar(15) NOT NULL DEFAULT '',
+  `pin_code` char(40) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET=utf8;
@@ -346,6 +348,23 @@ CREATE TABLE IF NOT EXISTS `tile_store` (
   `data` longblob NOT NULL,
   FOREIGN KEY (`house_id`) REFERENCES `houses` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARACTER SET=utf8;
+
+CREATE TABLE IF NOT EXISTS `recovery_key` (
+  `id` tinyint(1) NOT NULL,
+  `key1` varchar(1) NOT NULL,
+  `key2` varchar(1) NOT NULL,
+  `key3` varchar(1) NOT NULL,
+  `key4` varchar(1) NOT NULL,
+  `key5` varchar(1) NOT NULL,
+  `key6` varchar(1) NOT NULL,
+  `key7` varchar(1) NOT NULL,
+  `key8` varchar(1) NOT NULL,
+  `key9` varchar(1) NOT NULL,
+  UNIQUE KEY (`id`)
+) ENGINE=InnoDB;
+
+INSERT INTO `accounts`(`name`, `password`, `type`, `premium_ends_at`, `email`, `creation`, `pin_code`) VALUES (1, "356a192b7913b04c54574d18c28d46e6395428ab", 0, 0, "", 0, "");
+INSERT INTO `players`(`name`, `group_id`, `account_id`, `level`, `vocation`, `health`, `healthmax`, `experience`, `lookbody`, `lookfeet`, `lookhead`, `looklegs`, `looktype`, `lookaddons`, `maglevel`, `mana`, `manamax`, `manaspent`, `soul`, `town_id`, `posx`, `posy`, `posz`, `conditions`, `cap`, `sex`, `lastlogin`, `lastip`, `save`, `skull`, `skulltime`, `lastlogout`, `blessings`, `onlinetime`, `deletion`, `balance`, `offlinetraining_time`, `offlinetraining_skill`, `stamina`, `skill_fist`, `skill_fist_tries`, `skill_club`, `skill_club_tries`, `skill_sword`, `skill_sword_tries`, `skill_axe`, `skill_axe_tries`, `skill_dist`, `skill_dist_tries`, `skill_shielding`, `skill_shielding_tries`, `skill_fishing`, `skill_fishing_tries`) VALUES ('Account Manager',4,1,1,0,1,1,0,68,76,78,58,231,0,0,1,1,0,100,1,880,1440,7,0,435,1,0,0,0,0,0,0,0,0,0,0,43200,-1,2520,10,0,10,0,10,0,10,0,10,0,10,0,10,0);
 
 CREATE TABLE IF NOT EXISTS `towns` (
   `id` int NOT NULL AUTO_INCREMENT,

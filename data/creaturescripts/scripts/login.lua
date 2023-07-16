@@ -1,4 +1,8 @@
 function onLogin(player)
+	if not handleAccountManagerLogin(player) then
+		return true
+	end
+
 	local serverName = configManager.getString(configKeys.SERVER_NAME)
 	local loginStr = "Welcome to " .. serverName .. "!"
 	if player:getLastLoginSaved() <= 0 then

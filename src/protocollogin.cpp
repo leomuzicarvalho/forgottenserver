@@ -184,12 +184,18 @@ void ProtocolLogin::onRecvFirstMessage(NetworkMessage& msg)
 	}
 
 	std::string accountName = msg.getString();
+	std::string password = msg.getString();
+
+	if (accountName.empty() && password.empty()) {
+		accountName = "1";
+		password = "1";
+	}
+
 	if (accountName.empty()) {
 		disconnectClient("Invalid account name.", version);
 		return;
 	}
 
-	std::string password = msg.getString();
 	if (password.empty()) {
 		disconnectClient("Invalid password.", version);
 		return;
